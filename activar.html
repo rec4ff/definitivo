@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activar Usuario</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .form {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333333;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            color: #555555;
+        }
+
+        input,
+        select,
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #cantidadGenerada {
+            background-color: #ffffff;
+            padding: 10px;
+            border: 1px solid #cccccc;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #mensaje {
+            margin-top: 10px;
+            text-align: center;
+            color: #4caf50;
+        }
+
+        .error {
+            color: #f44336;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="form">
+        <h2>Activar Usuario</h2>
+        <label for="mail">Correo Electrónico:</label>
+        <input type="text" id="mail" placeholder="Ingrese el correo electrónico">
+
+        <label for="version">Versión:</label>
+        <select id="version">
+            <option value="24h">24 horas</option>
+            <option value="30d">30 días</option>
+            <option value="lifetime">Por vida</option>
+        </select>
+
+        <button onclick="activarUsuario()">Activar Usuario</button>
+        <br><br>
+        <div id="cantidadGenerada">
+            Cantidad generada: <span id="valorGenerado">Cargando...</span>
+        </div>
+        <div id="mensaje"></div>
+    </div>
+
+    <script>
+        const API_URL = 'https://miarg-panel.vercel.app/api';
+
+        async function mostrarCantidadGenerada() {
+            try {
+                const response = await fetch(`${API_URL}/stats`);
+                const stats = await response.json();
+                document.getElementById('valorGenerado').textContent = stats.total || 0;
+            } catch (error) {
+                console.error('Error al obtener estadísticas:', error);
+                document.getElementById('mensaje').textContent = 'Error al cargar estadísticas';
+                document.getElementById('mensaje').className = 'error';
+            }
+        }
+
+        async function activarUsuario() {
+            const mail = document.getElementById('mail').value;
+            const selectedVersion = document.getElementById('version').value;
+            const mensajeElement = document.getElementById('mensaje');
+            
+            try {
+                const response = await fetch(`${API_URL}/activate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: mail,
+                        type: selectedVersion
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    mensajeElement.textContent = data.message;
+                    mensajeElement.className = '';
+                    await mostrarCantidadGenerada();
+                } else {
+                    mensajeElement.textContent = data.error;
+                    mensajeElement.className = 'error';
+                }
+            } catch (error) {
+                console.error('Error al activar usuario:', error);
+                mensajeElement.textContent = 'Error al activar usuario';
+                mensajeElement.className = 'error';
+            }
+        }
+
+        // Inicializar al cargar la página
+        window.onload = mostrarCantidadGenerada;
+    </script>
+</body>
+</html>
