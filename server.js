@@ -20,6 +20,21 @@ async function connectDB() {
         const client = await MongoClient.connect(MONGODB_URI);
         db = client.db(DB_NAME);
         console.log('Conectado a MongoDB');
+        
+        // Inicializar stats si no existe
+        const stats = await db.collection('stats').findOne({ _id: 'ingresos' });
+        if (!stats) {
+            await db.collection('stats').insertOne({
+                _id: 'ingresos',
+                total: 0,
+                activaciones: {
+                    '24h': 0,
+                    '30d': 0,
+                    'lifetime': 0
+                }
+            });
+            console.log('Estadísticas inicializadas');
+        }
     } catch (error) {
         console.error('Error al conectar a MongoDB:', error);
     }
@@ -34,19 +49,49 @@ app.get('/', (req, res) => {
 // Rutas
 app.get('/api/stats', async (req, res) => {
     try {
+        if (!db) {
+            console.error('No hay conexión a la base de datos');
+            return res.status(500).json({ error: 'Error de conexión a la base de datos' });
+        }
+
         const stats = await db.collection('stats').findOne({ _id: 'ingresos' });
-        res.json(stats || { total: 0, activaciones: { '24h': 0, '30d': 0, 'lifetime': 0 } });
+        console.log('Estadísticas obtenidas:', stats);
+        
+        if (!stats) {
+            // Si no hay estadísticas, crear un documento inicial
+            const initialStats = {
+                _id: 'ingresos',
+                total: 0,
+                activaciones: {
+                    '24h': 0,
+                    '30d': 0,
+                    'lifetime': 0
+                }
+            };
+            await db.collection('stats').insertOne(initialStats);
+            return res.json(initialStats);
+        }
+        
+        res.json(stats);
     } catch (error) {
+        console.error('Error al obtener estadísticas:', error);
         res.status(500).json({ error: 'Error al obtener estadísticas' });
     }
 });
 
 app.post('/api/activate', async (req, res) => {
     try {
+        if (!db) {
+            console.error('No hay conexión a la base de datos');
+            return res.status(500).json({ error: 'Error de conexión a la base de datos' });
+        }
+
         const { email, type } = req.body;
+        console.log('Activando usuario:', { email, type });
         
         const user = await db.collection('users').findOne({ email });
         if (!user) {
+            console.log('Usuario no encontrado:', email);
             return res.status(404).json({ error: 'Usuario no encontrado' });
         }
 
@@ -101,8 +146,10 @@ app.post('/api/activate', async (req, res) => {
             }
         );
 
+        console.log('Usuario activado correctamente:', email);
         res.json({ success: true, message: 'Usuario activado correctamente' });
     } catch (error) {
+        console.error('Error al activar usuario:', error);
         res.status(500).json({ error: 'Error al activar usuario' });
     }
 });
