@@ -5,7 +5,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Configuración de MongoDB
-const MONGODB_URI = 'mongodb+srv://tomasbertello2006:DijUOXm0jmF68Qa3@cluster2.rhbfdjk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster2';
+const MONGODB_URI = 'mongodb+srv://tomasbertello2006:DijUOXm0jmF68Qa3@cluster2.rhbfdjk.mongodb.net/miarg?retryWrites=true&w=majority&appName=Cluster2';
 const DB_NAME = 'miarg';
 
 // Middleware
@@ -25,6 +25,11 @@ async function connectDB() {
     }
 }
 connectDB();
+
+// Ruta de prueba
+app.get('/', (req, res) => {
+    res.send('Servidor funcionando correctamente');
+});
 
 // Rutas
 app.get('/api/stats', async (req, res) => {
