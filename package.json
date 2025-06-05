@@ -1,5 +1,5 @@
 {
-  "name": "miarg-admin",
+  "name": "miarg_admin",
   "version": "1.0.0",
   "description": "Panel de administración para MIARG",
   "main": "server.js",
