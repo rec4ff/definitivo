@@ -11,6 +11,16 @@ const DB_NAME = 'miarg';
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Configurar headers de seguridad
+app.use((req, res, next) => {
+    res.setHeader(
+        'Content-Security-Policy',
+        "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'"
+    );
+    next();
+});
+
 app.use(express.static('public'));
 
 // Conexión a MongoDB

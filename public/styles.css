@@ -1,0 +1,71 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.form {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 100%;
+}
+
+h2 {
+    text-align: center;
+    color: #333333;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+    color: #555555;
+}
+
+input,
+select,
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+button {
+    background-color: #4caf50;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+#cantidadGenerada {
+    background-color: #ffffff;
+    padding: 10px;
+    border: 1px solid #cccccc;
+    text-align: center;
+    margin-top: 20px;
+}
+
+#mensaje {
+    margin-top: 10px;
+    text-align: center;
+    color: #4caf50;
+}
+
+.error {
+    color: #f44336;
+} 
